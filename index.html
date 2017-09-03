@@ -29,6 +29,8 @@
 	<script>
 		var container, stats;
 		var camera, scene, projector, renderer;
+		var mouse = new THREE.Vector2();
+		var raycaster = new THREE.Raycaster();
 
 		init();
 		animate();
@@ -52,7 +54,7 @@
 				for (var i = 0; i < 30; i++) {
 					var color = randomColor({
 						luminosity: 'light',
-						hue: 'monochrome'
+						hue: 'blue'
 					});
 					var object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
 						color,
@@ -87,7 +89,7 @@
 			// stats.domElement.style.top = '0px';
 			// container.appendChild(stats.domElement);
 
-			document.addEventListener('mousedown', onDocumentMouseDown, false);
+			document.addEventListener('mousemove', onDocumentMouseMove, false);
 
 			//
 
@@ -104,15 +106,13 @@
 
 		}
 
-		function onDocumentMouseDown(event) {
+		function onDocumentMouseMove(event) {
 
 			event.preventDefault();
 
-			var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
-			projector.unprojectVector(vector, camera);
-
-			var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-
+			mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+			mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+			raycaster.setFromCamera(mouse, camera);
 			var intersects = raycaster.intersectObjects(scene.children);
 
 			if (intersects.length > 0) {
@@ -133,14 +133,7 @@
 
 			}
 
-			/*
-			// Parse all the faces
-			for ( var i in intersects ) {
-
-				intersects[ i ].face.material[ 0 ].color.setHex( Math.random() * 0xffffff | 0x80000000 );
-
-			}
-			*/
+	
 		}
 
 		//
